@@ -34,189 +34,209 @@ import random as rd
     le score des grilles aussi en fonction de la disposition des cases, comme nous le faisons
     quand on joue au jeu 2048 """
 
-""" Aide au pour les fonctions """
 
-
-# help(jeu2048)
-
-class jeu2048:
+cdef class jeu2048:
+    cdef public list matrice
+    cdef public int score
 
     def __init__(self):
-        self.matrice = [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]
+        self.matrice = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         self.score = 0
 
     def __str__(self):
+        cdef int i
         string = "Le score est de " + str(self.score) + "\n"
         for i in range(4):
-            for j in range(3):
-                string += str(self.matrice[i][j]) + "|"
-            string += str(self.matrice[i][3]) + "\n"
+            string += f"{self.matrice[4*i]}|{self.matrice[4*i + 1]}|{self.matrice[4*i + 2]}|{self.matrice[4*i + 3]}\n"
+
         return string
 
-    def copie(self):
+    cpdef copie(self):
         """ Effectue une copie de self dans grille"""
 
+        cdef int i
         grille = jeu2048()
-        for i in range(4):
-            for j in range(4):
-                grille.matrice[i][j] = self.matrice[i][j]
+
+        for i in range(16):
+            grille.matrice[i] = self.matrice[i]
         return grille
 
-    def case_vide(self):
+    cpdef list case_vide(self):
         """Actualise la liste des cases vides de la grille"""
 
-        Liste = []
-        for i in range(4):
-            for j in range(4):
-                if self.matrice[i][j] == 0:
-                    Liste.append((i, j))
+        cdef list Liste = []
+        cdef int i
+
+        for i in range(16):
+            if self.matrice[i] == 0: Liste.append(i)
         return Liste
 
-    def actualise(self):
+    cpdef void actualise(self):
         """Actualise la grille en ajoutant un 2 ou 4 aléatoirement dans 
            une case vide de la grille"""
 
-        i, j = rd.choice(self.case_vide())  # On en choisit une au hasard
-        self.matrice[i][j] = rd.choice([2, 2, 2, 2, 2, 2, 2, 4])
+        cdef int i = rd.choice(self.case_vide())  # On en choisit une au hasard
 
-    def decalage_gauche(self):
+        self.matrice[i] = rd.choice([2, 2, 2, 2, 2, 2, 2, 4])
+
+    cpdef void decalage_gauche(self):
         """Decale toutes les cases vers la gauche"""
+
+        cdef int i, j, q
 
         for i in range(4):
             for j in range(1, 4):
-                if self.matrice[i][j] != 0:
+                if self.matrice[4*i + j] != 0:
                     q = j - 1
-                    while q >= 0 and self.matrice[i][q] == 0:
-                        self.matrice[i][q] = self.matrice[i][q + 1]
-                        self.matrice[i][q + 1] = 0
+                    while q >= 0 and self.matrice[4*i + q] == 0:
+                        self.matrice[4*i + q] = self.matrice[4*i + q + 1]
+                        self.matrice[4*i + q + 1] = 0
                         q -= 1
 
-    def decalage_droite(self):
+    cpdef void decalage_droite(self):
         """Decale toutes les cases vers la droite"""
+
+        cdef int i, j, q
 
         for i in range(4):
             for j in range(2, -1, -1):
-                if self.matrice[i][j] != 0:
+                if self.matrice[4*i + j] != 0:
                     q = j + 1
-                    while q <= 3 and self.matrice[i][q] == 0:
-                        self.matrice[i][q] = self.matrice[i][q - 1]
-                        self.matrice[i][q - 1] = 0
+                    while q <= 3 and self.matrice[4*i + q] == 0:
+                        self.matrice[4*i + q] = self.matrice[4*i + q - 1]
+                        self.matrice[4*i + q - 1] = 0
                         q += 1
 
-    def decalage_haut(self):
+    cpdef void decalage_haut(self):
         """Decale toutes les cases vers le haut"""
+
+        cdef int i, j, q
 
         for j in range(4):
             for i in range(1, 4):
-                if self.matrice[i][j] != 0:
+                if self.matrice[4*i + j] != 0:
                     q = i - 1
-                    while q >= 0 and self.matrice[q][j] == 0:
-                        self.matrice[q][j] = self.matrice[q + 1][j]
-                        self.matrice[q + 1][j] = 0
+                    while q >= 0 and self.matrice[4*q + j] == 0:
+                        self.matrice[4*q + j] = self.matrice[4*q + 4 + j]
+                        self.matrice[4*q + 4 + j] = 0
                         q -= 1
 
-    def decalage_bas(self):
+    cpdef void decalage_bas(self):
         """Decale toutes les cases vers le bas"""
+
+        cdef int i, j, q
 
         for j in range(4):
             for i in range(2, -1, -1):
-                if self.matrice[i][j] != 0:
+                if self.matrice[4*i + j] != 0:
                     q = i + 1
-                    while q <= 3 and self.matrice[q][j] == 0:
-                        self.matrice[q][j] = self.matrice[q - 1][j]
-                        self.matrice[q - 1][j] = 0
+                    while q <= 3 and self.matrice[4*q + j] == 0:
+                        self.matrice[4*q + j] = self.matrice[4*q - 4 + j]
+                        self.matrice[4*q - 4 + j] = 0
                         q += 1
 
-    def fusion_gauche(self):
+    cpdef void fusion_gauche(self):
         """Fusionne les cases adjacentes : si la case à droite vaut la même chose
            -> on multiplie par deux la case
            -> on met à 0 celle de droite de la case considérée
            -> on actualise le score de la partie                          """
 
+        cdef int i, j
+        cdef bint test
+
         for i in range(4):
             j = 0
             test = False
             while j <= 2:
-                if self.matrice[i][j + 1] == self.matrice[i][j] and self.matrice[i][j] != 0:
-                    self.matrice[i][j] *= 2
-                    self.matrice[i][j + 1] = 0
-                    self.score += self.matrice[i][j]
+                if self.matrice[4*i + j + 1] == self.matrice[4*i + j] and self.matrice[4*i + j] != 0:
+                    self.matrice[4*i + j] *= 2
+                    self.matrice[4*i + j + 1] = 0
+                    self.score += self.matrice[4*i + j]
                     test = True
                 j += 1
             if test:  # Si on a fusionné sur la ligne on décale
                 # On a au plus un décalage à faire par case
                 for j in range(2, 4):
-                    if self.matrice[i][j] != 0 and self.matrice[i][j - 1] == 0:
-                        self.matrice[i][j - 1] = self.matrice[i][j]
-                        self.matrice[i][j] = 0
+                    if self.matrice[4*i + j] != 0 and self.matrice[4*i + j - 1] == 0:
+                        self.matrice[4*i + j - 1] = self.matrice[4*i + j]
+                        self.matrice[4*i + j] = 0
 
-    def fusion_droite(self):
+    cpdef void fusion_droite(self):
         """Fusionne les cases adjacentes : si la case à gauche vaut la même chose
            -> on multiplie par deux la case
            -> on met à 0 celle de gauche de la case considérée
            -> on actualise le score de la partie                          """
 
+        cdef int i, j
+        cdef bint test
+
         for i in range(4):
             j = 3
             test = False
             while j >= 1:
-                if self.matrice[i][j] == self.matrice[i][j - 1] and self.matrice[i][j] != 0:
-                    self.matrice[i][j] *= 2
-                    self.matrice[i][j - 1] = 0
-                    self.score += self.matrice[i][j]
+                if self.matrice[4*i + j] == self.matrice[4*i + j - 1] and self.matrice[4*i + j] != 0:
+                    self.matrice[4*i + j] *= 2
+                    self.matrice[4*i + j - 1] = 0
+                    self.score += self.matrice[4*i + j]
                     test = True
                 j -= 1
             if test:
                 for j in range(1, -1, -1):
-                    if self.matrice[i][j] != 0 and self.matrice[i][j + 1] == 0:
-                        self.matrice[i][j + 1] = self.matrice[i][j]
-                        self.matrice[i][j] = 0
+                    if self.matrice[4*i + j] != 0 and self.matrice[4*i + j + 1] == 0:
+                        self.matrice[4*i + j + 1] = self.matrice[4*i + j]
+                        self.matrice[4*i + j] = 0
 
-    def fusion_haut(self):
+    cpdef void fusion_haut(self):
         """Fusionne les cases adjacentes : si la case en dessous vaut la même chose
            -> on multiplie par deux la case
            -> on met à 0 celle en dessous de la case considérée
            -> on actualise le score de la partie                          """
 
+        cdef int i, j
+        cdef bint test
+
         for j in range(4):
             i = 0
             test = False
             while i <= 2:
-                if self.matrice[i + 1][j] == self.matrice[i][j] and self.matrice[i][j] != 0:
-                    self.matrice[i][j] *= 2
-                    self.matrice[i + 1][j] = 0
-                    self.score += self.matrice[i][j]
+                if self.matrice[4*i + 4 + j] == self.matrice[4*i + j] and self.matrice[4*i + j] != 0:
+                    self.matrice[4*i + j] *= 2
+                    self.matrice[4*i + 4 + j] = 0
+                    self.score += self.matrice[4*i + j]
                     test = True
                 i += 1
             if test:
                 for i in range(2, 4):
-                    if self.matrice[i][j] != 0 and self.matrice[i - 1][j] == 0:
-                        self.matrice[i - 1][j] = self.matrice[i][j]
-                        self.matrice[i][j] = 0
+                    if self.matrice[4*i + j] != 0 and self.matrice[4*i - 4 + j] == 0:
+                        self.matrice[4*i - 4 + j] = self.matrice[4*i + j]
+                        self.matrice[4*i + j] = 0
 
-    def fusion_bas(self):
+    cpdef void fusion_bas(self):
         """Fusionne les cases adjacentes : si la case au dessus vaut la même chose
            -> on multiplie par deux la case
            -> on met à 0 celle au dessus de la case considérée
            -> on actualise le score de la partie                          """
 
+        cdef int i, j
+        cdef bint test
+
         for j in range(4):
             i = 3
             test = False
             while i >= 1:
-                if self.matrice[i][j] == self.matrice[i - 1][j] and self.matrice[i][j] != 0:
-                    self.matrice[i][j] *= 2
-                    self.matrice[i - 1][j] = 0
-                    self.score += self.matrice[i][j]
+                if self.matrice[4*i + j] == self.matrice[4*i - 4 + j] and self.matrice[4*i + j] != 0:
+                    self.matrice[4*i + j] *= 2
+                    self.matrice[4*i - 4 + j] = 0
+                    self.score += self.matrice[4*i + j]
                     test = True
                 i -= 1
             if test:
                 for i in range(1, -1, -1):
-                    if self.matrice[i][j] != 0 and self.matrice[i + 1][j] == 0:
-                        self.matrice[i + 1][j] = self.matrice[i][j]
-                        self.matrice[i][j] = 0
+                    if self.matrice[4*i + j] != 0 and self.matrice[4*i + 4 + j] == 0:
+                        self.matrice[4*i + 4 + j] = self.matrice[4*i + j]
+                        self.matrice[4*i + j] = 0
 
-    def coup_suivant(self, direction):
+    cpdef void coup_suivant(self, str direction):
         """ Effectue le mouvement complet :
            -> on décale toutes les cases dans la direction
            -> on fusionne les cases adjacentes 
@@ -241,61 +261,60 @@ class jeu2048:
         else:
             raise ValueError("La direction n'existe pas")
 
-    def fin_jeu(self):
+    cpdef fin_jeu(self):
         """ Renvoie une liste qui contient la liste des mouvements possbiles
            ie ceux qui modifient la matrice    """
 
         Liste_coup = []
-        mvt_bas = True
-        mvt_haut = True
-        mvt_gauche = True
-        mvt_droite = True
+        cdef int i, j
+        cdef bint mvt_bas, mvt_haut, mvt_gauche, mvt_droite
+        mvt_bas, mvt_haut, mvt_gauche, mvt_droite = True, True, True, True
 
-        """ Pour les mouvements verticaux """
+        # Pour les mouvements verticaux
         for i in range(3):  # sur chaque ligne on verifie si on peut fusionner ou décaler
             for j in range(4):
-                if mvt_bas and self.matrice[i][j] != 0:
-                    if self.matrice[i + 1][j] == 0 or self.matrice[i + 1][j] == self.matrice[i][j]:
+                if mvt_bas and self.matrice[4*i + j] != 0:
+                    if self.matrice[4*i + 4 + j] == 0 or self.matrice[4*i + 4 + j] == self.matrice[4*i + j]:
                         Liste_coup.append('bas')
                         mvt_bas = False
 
-                if mvt_haut and self.matrice[3 - i][j] != 0:
-                    if self.matrice[2 - i][j] == 0 or self.matrice[2 - i][j] == self.matrice[3 - i][j]:
+                if mvt_haut and self.matrice[12 - 4*i + j] != 0:
+                    if self.matrice[8 - 4*i + j] == 0 or self.matrice[8 - 4*i + j] == self.matrice[12 - 4*i + j]:
                         Liste_coup.append('haut')
                         mvt_haut = False
 
-        """ Pour les mouvements horizontaux """
+        # Pour les mouvements horizontaux
         for j in range(3):  # sur chaque colonne on verifie si on peut fusionner ou décaler
             for i in range(4):
-                if mvt_droite and self.matrice[i][j] != 0:
-                    if self.matrice[i][j + 1] == 0 or self.matrice[i][j + 1] == self.matrice[i][j]:
+                if mvt_droite and self.matrice[4*i + j] != 0:
+                    if self.matrice[4*i + j + 1] == 0 or self.matrice[4*i + j + 1] == self.matrice[4*i + j]:
                         Liste_coup.append('droite')
                         mvt_droite = False
 
-                if mvt_gauche and self.matrice[i][3 - j] != 0:
-                    if self.matrice[i][2 - j] == 0 or self.matrice[i][2 - j] == self.matrice[i][3 - j]:
+                if mvt_gauche and self.matrice[4*i + 3 - j] != 0:
+                    if self.matrice[4*i + 2 - j] == 0 or self.matrice[4*i + 2 - j] == self.matrice[4*i + 3 - j]:
                         Liste_coup.append('gauche')
                         mvt_gauche = False
 
         return Liste_coup
 
-    def jeu_2048_random(self, direction):
-        """Effectue une partie aléatoire après le mouvement imposé et renvoie 
-           le score"""
+    cpdef int jeu_2048_random(self, str direction):
+        """Effectue une partie aléatoire après le mouvement imposé et renvoie le score"""
 
         self.coup_suivant(direction)
         self.actualise()
         fin = self.fin_jeu()
-        q = 0
+
+        cdef int q = 0
         while len(fin) > 0 and q < 20:  # On se limite à une profondeur de 20 coups
-            self.coup_suivant(rd.choice(fin))  # On prend une direction aléatoiren et on fait le coup
+            self.coup_suivant(rd.choice(fin))  # On prend une direction aléatoirement et on fait le coup
             self.actualise()  # On ajoute un 2/4 aléatoirement dans la grille
             fin = self.fin_jeu()  # On actualise la liste des coups possibles
             q += 1
 
         return self.score
 
-    def direction_suivante(self, coups):
+    cdef str direction_suivante(self, coups):
         """ Renvoie la meilleure direction :
            on fait la moyenne des scores sur N parties aléatoires pour un nombre maximum
            de coups après avoir fait une des direction possibles, celle avec les meilleures 
@@ -303,46 +322,51 @@ class jeu2048:
            
            Le score est tel que si l'on forme un 8 on gagne 8 points, et ainsi de suite """
 
-        if len(coups) == 1:  # Si on ne peut que faire un mouvement on le fait
-            return coups[0]
+        if len(coups) == 1: return coups[0]
 
-        N = 100  # Nombre de parties aléatoires
+        cdef int N = 100  # Nombre de parties aléatoires
+        cdef str res = coups[0]
+        cdef int somme = 0
+        cdef int total = 0
+        cdef int i
+        cdef str dir
 
-        res = coups[0]
-        somme = 0
-        for j in range(N):
+        for i in range(N):
             grille = self.copie()
-            somme += grille.jeu_2048_random(coups[0])
+            somme += grille.jeu_2048_random(res)
 
-        for i in range(1, len(coups)):
+        for dir in coups:
             total = 0
             for j in range(N):
                 grille = self.copie()
-                total += grille.jeu_2048_random(coups[i])
+                total += grille.jeu_2048_random(dir)
             if total > somme:
                 somme = total
-                res = coups[i]
+                res = dir
 
         return res
 
-    def simulation(self):
+    cpdef void simulation(self):
         """Cette fonction simule une partie complète et affiche la grille à chaque coup"""
 
         jeu = jeu2048()  # On initialise le jeu
 
-        jeu.actualise()  # On initialise la matrice du jeu
+        jeu.actualise()  # On initialise la matrice du jeu avec 2 cases non vides
         jeu.actualise()
+
         fin = jeu.fin_jeu()
 
-        """Debut_du_jeu"""
+        # Debut du jeu
         while len(fin) > 0:  # Tant qu'on peut jouer on continue
             jeu.coup_suivant(jeu.direction_suivante(fin))
             jeu.actualise()
             print(jeu)
             fin = jeu.fin_jeu()
 
-    def partie(self):
+    cpdef list partie(self):
         """Cette fonction joue une partie complète et renvoie le score de la partie"""
+
+        cdef int i
 
         jeu = jeu2048()  # On initialise le jeu
 
@@ -350,7 +374,7 @@ class jeu2048:
         jeu.actualise()
         fin = jeu.fin_jeu()
 
-        """Debut_du_jeu"""
+        # Debut du jeu
         for i in range(25):  # On peut faire des coups aléatoire au début ça ne changera rien
             # On ne peut pas perdre en moins de 25 coups (empiriquement)
             jeu.coup_suivant(rd.choice(fin))
@@ -362,8 +386,5 @@ class jeu2048:
             jeu.actualise()
             fin = jeu.fin_jeu()
 
-        liste = list()
+        return jeu.matrice
 
-        for i in range(4):
-            liste += jeu.matrice[i]
-        return liste

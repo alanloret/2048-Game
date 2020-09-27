@@ -8,6 +8,7 @@ Created on Tue Nov 12 13:35:20 2019
 
 from setup import jeu
 import time
+from datetime import timedelta
 import matplotlib.pyplot as plt
 
 """ Notre algorithme suit la méthode de Monte-Carlo
@@ -46,7 +47,7 @@ for i in range(nbr_partie):
     t1 = time.time()
     resultat += jeu()
     t2 = time.time()
-    print("Durée de la partie: {0}min {1}s\n".format(int(t2-t1) // 60, int(t2-t1) % 60))
+    print(f"Durée de la partie: {str(timedelta(seconds=t2 - t1)):8>0}\n")
 
 resultat.sort()
 Liste = list()

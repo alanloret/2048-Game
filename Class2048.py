@@ -343,7 +343,7 @@ class jeu2048:
         liste = []
         for i in range(4):
             liste += jeu.matrice[i]
-        return liste.sorte(reverse=False)
+        return liste.sort(reverse=False)
 
 
 class Test(unittest.TestCase):
@@ -440,7 +440,7 @@ class Test(unittest.TestCase):
                           [8, 2, 0, 0],
                           [2, 0, 0, 0]]
 
-        self.assertEqual(set(grille.fin_jeu()), set(['droite', 'gauche', 'bas']))
+        self.assertEqual(set(grille.fin_jeu()), {'droite', 'gauche', 'bas'})
 
         grille.matrice = [[8, 2, 8, 2],
                           [16, 64, 4, 32],
@@ -472,6 +472,6 @@ resultat = []
 for i in range(100):
     print("#", i + 1, sep="")
     t1 = time.time()
-    resultat.append(jeu2048.simulation())
+    resultat.append(jeu2048().simulation())
     t2 = time.time()
     print("Durée de la partie: {0}min {1}s\n".format(int(t2 - t1) // 60, int(t2 - t1) % 60))
