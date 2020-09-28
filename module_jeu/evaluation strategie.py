@@ -17,15 +17,15 @@ from game import jeu2048
     aléatoires en partant de la grille donnée et on retient le coup qui engendre 
     les meilleurs résultats en moyenne
     
-    L'algorithme est donc très lent même si nous avons bien optimisé les fonctions :
+    L'algorithme est donc assez lent même si nous avons bien optimisé les fonctions et utilisé Cython :
      -> si l'on effectue aléatoirement les parties jusqu'à la défaite on a pour 
         200 parties aléatoires : 90% du temps un 2048 et 25% du temps un 4096
         (si l'on augmente encore le nombre de partie aléatoire on ne gagne pas plus souvent
-        et la durée d'une partie est de 11min)
+        et la durée d'une partie est de 2min)
      
      -> mais si l'on limite le nombre de coups à 20 pour chaque partie aléatoire et qu'on
         en fait que 100 : 85% du temps un 2048 et 15% du temps un 4096 
-        (la durée d'attente dans ce cas est de 5min en moyenne)
+        (la durée d'attente dans ce cas est de 20s en moyenne)
      
      -> si l'on diminue encore le nombre de coups ou le nombre de partie aléatoire 
         on perd nettement en performance      
@@ -40,7 +40,7 @@ from game import jeu2048
     
 
 resultat = []
-nbr_partie = 100
+nbr_partie = 5
 
 for i in range(nbr_partie):
     t1 = time.time()
@@ -48,9 +48,5 @@ for i in range(nbr_partie):
     t2 = time.time()
     print(f"#{i+1}\nDurée de la partie: {str(timedelta(seconds=int(t2 - t1))):8>0}\n")
 
-resultat.sort()
-Liste = []
-for i in range(len(resultat)):
-    Liste += [i]*resultat[i]
-plt.step(Liste)
+plt.step(resultat.sort(), len(resultat))
 plt.show()

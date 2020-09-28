@@ -365,7 +365,7 @@ cdef class jeu2048:
             print(jeu)
             fin = jeu.fin_jeu()
 
-    cpdef list partie(self):
+    cpdef int partie(self):
         """Cette fonction joue une partie complète et renvoie le score de la partie"""
 
         cdef int i

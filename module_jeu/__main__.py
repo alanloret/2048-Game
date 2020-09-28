@@ -13,6 +13,6 @@ import time
 if __name__ == '__main__':
 
     t1 = time.time()
-    res = jeu2048().partie()
+    res = jeu2048().simulation()
     t2 = time.time()
     print(f"Durée de la partie: {str(timedelta(seconds=int(t2 - t1))):8>0}\n")
