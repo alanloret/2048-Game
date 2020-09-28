@@ -9,6 +9,7 @@ Created on Tue Oct 09 14:40:32 2019
 import random as rd
 import time
 import unittest
+from datetime import timedelta
 
 """ Notre algorithme suit la méthode de Monte-Carlo
     Il évalue tous les coups qu'on souhaite tester en faisant plusieurs parties
@@ -346,132 +347,9 @@ class jeu2048:
         return liste.sort(reverse=False)
 
 
-class Test(unittest.TestCase):
-    """On test si les mouvements qu'on effectue sont bien conformes aux règles
-           du jeu et qu'on lève une erreur lorsque la direction n'existe pas
-           Cela pour les 4 directions """
-
-    def test_case_vide(self):
-        """ On teste la fonction actualise qui un 2 ou un 4 à la grille, 
-        ce qui permet aussi de tester le bon fonctionnement de la fonction 
-        case_vide qui actualise la liste des cases vides """
-
-        grille = jeu2048()
-        grille.matrice = [[2, 2, 0, 0],
-                          [2, 0, 2, 0],
-                          [2, 0, 0, 2],
-                          [0, 2, 8, 0]]
-
-        correction = len(grille.case_vide())
-
-        grille.actualise()
-        # On a complété une case vide de la grille donc on en a 8-1 = 7
-        self.assertEqual(len(grille.case_vide()), correction - 1)
-        self.assertEqual(7, correction - 1)
-
-    def test_mouvement_gauche(self):
-        grille = jeu2048()
-        grille.matrice = [[2, 2, 2, 0],
-                          [2, 0, 2, 0],
-                          [2, 0, 2, 2],
-                          [0, 2, 8, 0]]
-
-        grille.coup_suivant("gauche")
-
-        correction = [[4, 2, 0, 0],
-                      [4, 0, 0, 0],
-                      [4, 2, 0, 0],
-                      [2, 8, 0, 0]]
-        self.assertEqual(grille.matrice, correction)
-
-        # On test si une autre chaine de caractère  renvoie bien une erreur
-        with self.assertRaises(ValueError):
-            grille.coup_suivant("bhtbh")
-
-    def test_mouvement_droite(self):
-        grille = jeu2048()
-        grille.matrice = [[2, 2, 0, 0],
-                          [2, 0, 2, 0],
-                          [8, 0, 0, 2],
-                          [2, 2, 2, 2]]
-        grille.coup_suivant("droite")
-
-        correction = [[0, 0, 0, 4],
-                      [0, 0, 0, 4],
-                      [0, 0, 8, 2],
-                      [0, 0, 4, 4]]
-        self.assertEqual(grille.matrice, correction)
-
-    def test_mouvement_haut(self):
-        grille = jeu2048()
-        grille.matrice = [[2, 2, 0, 0],
-                          [4, 0, 2, 0],
-                          [2, 0, 0, 2],
-                          [2, 2, 2, 0]]
-        grille.coup_suivant("haut")
-
-        correction = [[2, 4, 4, 2],
-                      [4, 0, 0, 0],
-                      [4, 0, 0, 0],
-                      [0, 0, 0, 0]]
-        self.assertEqual(grille.matrice, correction)
-
-    def test_mouvement_bas(self):
-        grille = jeu2048()
-        grille.matrice = [[2, 2, 0, 0],
-                          [4, 0, 2, 0],
-                          [2, 0, 0, 2],
-                          [2, 2, 2, 0]]
-        grille.coup_suivant("bas")
-
-        correction = [[0, 0, 0, 0],
-                      [2, 0, 0, 0],
-                      [4, 0, 0, 0],
-                      [4, 4, 4, 2]]
-        self.assertEqual(grille.matrice, correction)
-
-    def test_fin_jeu(self):
-        """ Test de la fonction fin_jeu qui indique les coups possibles
-        qui modifient la grille """
-
-        grille = jeu2048()
-        grille.matrice = [[8, 2, 0, 0],
-                          [4, 4, 0, 0],
-                          [8, 2, 0, 0],
-                          [2, 0, 0, 0]]
-
-        self.assertEqual(set(grille.fin_jeu()), {'droite', 'gauche', 'bas'})
-
-        grille.matrice = [[8, 2, 8, 2],
-                          [16, 64, 4, 32],
-                          [4, 2, 16, 4],
-                          [2, 8, 4, 2]]
-
-        self.assertEqual(set(grille.fin_jeu()), set([]))
-
-    def test_score(self):
-        """ On teste le bon fonctionnement de coup_suivant en tant qu'elle
-            actualise bien le score de la grille """
-
-        grille = jeu2048()
-        grille.matrice = [[8, 2, 0, 0],
-                          [8, 2, 0, 0],
-                          [4, 2, 0, 0],
-                          [2, 0, 0, 0]]
-        grille.coup_suivant("haut")
-
-        # On forme un 16 et un 4 donc on gagne 16+4 = 20 points
-        self.assertEqual(grille.score, 20)
-
-
-"""On effectue les tests des fonctions"""
-# unittest.main()
-
-
 resultat = []
-for i in range(100):
-    print("#", i + 1, sep="")
+for i in range(1):
     t1 = time.time()
     resultat.append(jeu2048().simulation())
     t2 = time.time()
-    print("Durée de la partie: {0}min {1}s\n".format(int(t2 - t1) // 60, int(t2 - t1) % 60))
+    print(f"#{i + 1}\nDurée de la partie: {str(timedelta(seconds=int(t2 - t1))):8>0}\n")

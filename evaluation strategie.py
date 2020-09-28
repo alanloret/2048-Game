@@ -6,10 +6,11 @@ Created on Tue Nov 12 13:35:20 2019
 @author: alanloret
 """
 
-from setup import jeu
 import time
 from datetime import timedelta
 import matplotlib.pyplot as plt
+
+from Class2048 import jeu2048
 
 """ Notre algorithme suit la méthode de Monte-Carlo
     Il évalue tous les coups qu'on souhaite tester en faisant plusieurs parties
@@ -43,11 +44,10 @@ nbr_partie = 1
 
 
 for i in range(nbr_partie):
-    print("#", i+1)
     t1 = time.time()
-    resultat += jeu()
+    resultat += jeu2048().partie()
     t2 = time.time()
-    print(f"Durée de la partie: {str(timedelta(seconds=t2 - t1)):8>0}\n")
+    print(f"#{i+1}\nDurée de la partie: {str(timedelta(seconds=int(t2 - t1))):8>0}\n")
 
 resultat.sort()
 Liste = list()

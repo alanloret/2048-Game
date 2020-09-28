@@ -51,7 +51,7 @@ cdef class jeu2048:
 
         return string
 
-    cpdef copie(self):
+    cdef copie(self):
         """ Effectue une copie de self dans grille"""
 
         cdef int i
@@ -77,7 +77,10 @@ cdef class jeu2048:
 
         cdef int i = rd.choice(self.case_vide())  # On en choisit une au hasard
 
-        self.matrice[i] = rd.choice([2, 2, 2, 2, 2, 2, 2, 4])
+        if rd.uniform(0,1) < 0.875:
+            self.matrice[i] = 2
+        else:
+            self.matrice[i] = 4
 
     cpdef void decalage_gauche(self):
         """Decale toutes les cases vers la gauche"""
@@ -314,7 +317,7 @@ cdef class jeu2048:
 
         return self.score
 
-    cdef str direction_suivante(self, coups):
+    cpdef str direction_suivante(self, coups):
         """ Renvoie la meilleure direction :
            on fait la moyenne des scores sur N parties aléatoires pour un nombre maximum
            de coups après avoir fait une des direction possibles, celle avec les meilleures 
@@ -337,7 +340,7 @@ cdef class jeu2048:
 
         for dir in coups:
             total = 0
-            for j in range(N):
+            for i in range(N):
                 grille = self.copie()
                 total += grille.jeu_2048_random(dir)
             if total > somme:
@@ -353,7 +356,6 @@ cdef class jeu2048:
 
         jeu.actualise()  # On initialise la matrice du jeu avec 2 cases non vides
         jeu.actualise()
-
         fin = jeu.fin_jeu()
 
         # Debut du jeu
@@ -375,12 +377,6 @@ cdef class jeu2048:
         fin = jeu.fin_jeu()
 
         # Debut du jeu
-        for i in range(25):  # On peut faire des coups aléatoire au début ça ne changera rien
-            # On ne peut pas perdre en moins de 25 coups (empiriquement)
-            jeu.coup_suivant(rd.choice(fin))
-            jeu.actualise()
-            fin = jeu.fin_jeu()
-
         while len(fin) > 0:  # Tant qu'on peut jouer on continue
             jeu.coup_suivant(jeu.direction_suivante(fin))
             jeu.actualise()
