@@ -304,12 +304,12 @@ cdef class jeu2048:
     cpdef int jeu_2048_random(self, str direction):
         """Effectue une partie aléatoire après le mouvement imposé et renvoie le score"""
 
+        cdef int q = 0
         self.coup_suivant(direction)
         self.actualise()
         fin = self.fin_jeu()
 
-        cdef int q = 0
-        while len(fin) > 0 and q < 20:  # On se limite à une profondeur de 20 coups
+        while len(fin) > 0 and q <= 20:  # On se limite à une profondeur de 20 coups
             self.coup_suivant(rd.choice(fin))  # On prend une direction aléatoirement et on fait le coup
             self.actualise()  # On ajoute un 2/4 aléatoirement dans la grille
             fin = self.fin_jeu()  # On actualise la liste des coups possibles
@@ -327,7 +327,7 @@ cdef class jeu2048:
 
         if len(coups) == 1: return coups[0]
 
-        cdef int N = 100  # Nombre de parties aléatoires
+        cdef int N = 200  # Nombre de parties aléatoires
         cdef str res = coups[0]
         cdef int somme = 0
         cdef int total = 0
@@ -382,5 +382,7 @@ cdef class jeu2048:
             jeu.actualise()
             fin = jeu.fin_jeu()
 
-        return jeu.matrice
+        print(jeu)
+
+        return jeu.score
 
