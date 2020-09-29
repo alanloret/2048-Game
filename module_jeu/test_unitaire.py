@@ -21,10 +21,10 @@ class Test(unittest.TestCase):
         case_vide qui actualise la liste des cases vides """
 
         grille = jeu2048()
-        grille.matrice = [[2, 2, 0, 0],
-                          [2, 0, 2, 0],
-                          [2, 0, 0, 2],
-                          [0, 2, 8, 0]]
+        grille.matrice = [2, 2, 0, 0,
+                          2, 0, 2, 0,
+                          2, 0, 0, 2,
+                          0, 2, 8, 0]
 
         correction = len(grille.case_vide())
 
@@ -35,62 +35,59 @@ class Test(unittest.TestCase):
 
     def test_mouvement_gauche(self):
         grille = jeu2048()
-        grille.matrice = [[2, 2, 2, 0],
-                          [2, 0, 2, 0],
-                          [2, 0, 2, 2],
-                          [0, 2, 8, 0]]
+        grille.matrice = [2, 2, 2, 0,
+                          2, 0, 2, 0,
+                          2, 0, 2, 2,
+                          0, 2, 8, 0]
 
         grille.coup_suivant("gauche")
 
-        correction = [[4, 2, 0, 0],
-                      [4, 0, 0, 0],
-                      [4, 2, 0, 0],
-                      [2, 8, 0, 0]]
+        correction = [4, 2, 0, 0,
+                      4, 0, 0, 0,
+                      4, 2, 0, 0,
+                      2, 8, 0, 0]
         self.assertEqual(grille.matrice, correction)
-        # On test si une autre chaine de caractère  renvoie bien une erreur
-        with self.assertRaises(ValueError):
-            grille.coup_suivant("bhtbh")
 
     def test_mouvement_droite(self):
         grille = jeu2048()
-        grille.matrice = [[2, 2, 0, 0],
-                          [2, 0, 2, 0],
-                          [8, 0, 0, 2],
-                          [2, 2, 2, 2]]
+        grille.matrice = [2, 2, 0, 0,
+                          2, 0, 2, 0,
+                          8, 0, 0, 2,
+                          2, 2, 2, 2]
         grille.coup_suivant("droite")
 
-        correction = [[0, 0, 0, 4],
-                      [0, 0, 0, 4],
-                      [0, 0, 8, 2],
-                      [0, 0, 4, 4]]
+        correction = [0, 0, 0, 4,
+                      0, 0, 0, 4,
+                      0, 0, 8, 2,
+                      0, 0, 4, 4]
         self.assertEqual(grille.matrice, correction)
 
     def test_mouvement_haut(self):
         grille = jeu2048()
-        grille.matrice = [[2, 2, 0, 0],
-                          [4, 0, 2, 0],
-                          [2, 0, 0, 2],
-                          [2, 2, 2, 0]]
+        grille.matrice = [2, 2, 0, 0,
+                          4, 0, 2, 0,
+                          2, 0, 0, 2,
+                          2, 2, 2, 0]
         grille.coup_suivant("haut")
 
-        correction = [[2, 4, 4, 2],
-                      [4, 0, 0, 0],
-                      [4, 0, 0, 0],
-                      [0, 0, 0, 0]]
+        correction = [2, 4, 4, 2,
+                      4, 0, 0, 0,
+                      4, 0, 0, 0,
+                      0, 0, 0, 0]
         self.assertEqual(grille.matrice, correction)
 
     def test_mouvement_bas(self):
         grille = jeu2048()
-        grille.matrice = [[2, 2, 0, 0],
-                          [4, 0, 2, 0],
-                          [2, 0, 0, 2],
-                          [2, 2, 2, 0]]
+        grille.matrice = [2, 2, 0, 0,
+                          4, 0, 2, 0,
+                          2, 0, 0, 2,
+                          2, 2, 2, 0]
         grille.coup_suivant("bas")
 
-        correction = [[0, 0, 0, 0],
-                      [2, 0, 0, 0],
-                      [4, 0, 0, 0],
-                      [4, 4, 4, 2]]
+        correction = [0, 0, 0, 0,
+                      2, 0, 0, 0,
+                      4, 0, 0, 0,
+                      4, 4, 4, 2]
         self.assertEqual(grille.matrice, correction)
 
     def test_fin_jeu(self):
@@ -98,17 +95,17 @@ class Test(unittest.TestCase):
         qui modifient la grille """
 
         grille = jeu2048()
-        grille.matrice = [[8, 2, 0, 0],
-                          [4, 4, 0, 0],
-                          [8, 2, 0, 0],
-                          [2, 0, 0, 0]]
+        grille.matrice = [8, 2, 0, 0,
+                          4, 4, 0, 0,
+                          8, 2, 0, 0,
+                          2, 0, 0, 0]
 
         self.assertEqual(set(grille.fin_jeu()), {'droite', 'gauche', 'bas'})
 
-        grille.matrice = [[8, 2, 8, 2],
-                          [16, 64, 4, 32],
-                          [4, 2, 16, 4],
-                          [2, 8, 4, 2]]
+        grille.matrice = [8, 2, 8, 2,
+                          16, 64, 4, 32,
+                          4, 2, 16, 4,
+                          2, 8, 4, 2]
 
         self.assertEqual(set(grille.fin_jeu()), set([]))
 
@@ -117,10 +114,10 @@ class Test(unittest.TestCase):
             actualise bien le score de la grille """
 
         grille = jeu2048()
-        grille.matrice = [[8, 2, 0, 0],
-                          [8, 2, 0, 0],
-                          [4, 2, 0, 0],
-                          [2, 0, 0, 0]]
+        grille.matrice = [8, 2, 0, 0,
+                          8, 2, 0, 0,
+                          4, 2, 0, 0,
+                          2, 0, 0, 0]
         grille.coup_suivant("haut")
 
         # On forme un 16 et un 4 donc on gagne 16+4 = 20 points
@@ -130,4 +127,3 @@ class Test(unittest.TestCase):
 """On teste nos fonctions"""
 if __name__ == '__main__':
     unittest.main()
-

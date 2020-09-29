@@ -8,31 +8,28 @@ Created on Tue Nov 12 12:06:42 2019
 
 import random as rd
 
-""" Notre algorithme suit la méthode de Monte-Carlo
-    Il évalue tous les coups qu'on souhaite tester en faisant plusieurs parties
-    aléatoires en partant de la grille donnée et on retient le coup qui engendre 
-    les meilleurs résultats en moyenne
+""" Notre algorithme suit la méthode de Monte-Carlo.
+    Il évalue tous les coups possibles en faisant plusieurs parties aléatoires en partant de 
+    la grille donnée. Nous effectuons ensuite le coup qui engendre les meilleurs scores en moyenne.
     
-    L'algorithme est donc très lent même si nous avons bien optimisé les fonctions :
-     -> si l'on effectue aléatoirement les parties jusqu'à la défaite on a pour 
-        200 parties aléatoires : 90% du temps un 2048 et 25% du temps un 4096
-        (si l'on augmente encore le nombre de partie aléatoire on ne gagne pas plus souvent
-        et la durée d'une partie est de 11min)
-     
-     -> mais si l'on limite le nombre de coups à 20 pour chaque partie aléatoire et qu'on
-        en fait que 100 : 85% du temps un 2048 et 15% du temps un 4096 
-        (la durée d'attente dans ce cas est de 5min en moyenne)
-     
-     -> si l'on diminue encore le nombre de coups ou le nombre de partie aléatoire 
-        on perd nettement en performance      
+    L'algorithme est donc assez lent même si nous avons bien optimisé les fonctions et utilisé Cython :
+     -> * si on effectue aléatoirement les parties jusqu'à la défaite on a pour 200 parties aléatoires : 
+        90% du temps un 2048 et 25% du temps un 4096 pour en moyenne des parties de 2min 30s (si on 
+        augmente encore le nombre de partie aléatoire on ne gagne pas significativement plus souvent).
+        * si on limite le nombre de coups à 20 pour chaque partie aléatoire on a pour 100 parties aléatoires : 
+        85% du temps un 2048 et 15% du temps un 4096, la durée d'attente dans ce cas est de 40s en moyenne.
+        * si on diminue encore le nombre de coups ou le nombre de partie aléatoire 
+        on perd nettement en performance.      
     
     -> si vous voulez tester notre code : le fichier __main__ affiche une simulation coup par coup
-       ou bien diminuez le nombre de partie à 10 au lieu de 100 dans la fonction  
-       module_jeu/fonctions_jeu_2048/direction_Optimale -> ligne 320
+       ou bien lancez le fichier evaluation strategie.py.
+       
+    Note : Vous pouvez modifier le nombre de partie aléatoire dans la fonction direction_Optimale de ce 
+    fichier à la ligne 327.
         
-    Pour avoir de meilleurs résultats il faudrait combiner notre algorithme en modifiant 
-    le score des grilles aussi en fonction de la disposition des cases, comme nous le faisons
-    quand on joue au jeu 2048 """
+    Pour avoir de meilleurs résultats, il faudrait prendre en compte la disposition des cases dans la grille 
+    qui est très importante lorsqu'on commence à avoir des scores importants. Pour ce faire on pourrait 
+    pénaliser des coups qui entrainent des dispositions très mauvaises ou bien utiliser un réseau de neurones."""
 
 
 cdef class jeu2048:
@@ -320,32 +317,32 @@ cdef class jeu2048:
     cpdef str direction_suivante(self, coups):
         """ Renvoie la meilleure direction :
            on fait la moyenne des scores sur N parties aléatoires pour un nombre maximum
-           de coups après avoir fait une des direction possibles, celle avec les meilleures 
-           scores en moyenne est considérée comme étant la meilleure 
+           de coups après avoir fait une des directions possibles, celle avec les meilleurs 
+           scores en moyenne est considérée comme étant la meilleure.
            
            Le score est tel que si l'on forme un 8 on gagne 8 points, et ainsi de suite """
 
         if len(coups) == 1: return coups[0]
 
-        cdef int N = 200  # Nombre de parties aléatoires
+        cdef int N = 100  # Nombre de parties aléatoires
         cdef str res = coups[0]
         cdef int somme = 0
         cdef int total = 0
         cdef int i
-        cdef str dir
+        cdef str direction
 
         for i in range(N):
             grille = self.copie()
             somme += grille.jeu_2048_random(res)
 
-        for dir in coups:
+        for direction in coups:
             total = 0
             for i in range(N):
                 grille = self.copie()
-                total += grille.jeu_2048_random(dir)
+                total += grille.jeu_2048_random(direction)
             if total > somme:
                 somme = total
-                res = dir
+                res = direction
 
         return res
 
@@ -372,7 +369,7 @@ cdef class jeu2048:
 
         jeu = jeu2048()  # On initialise le jeu
 
-        jeu.actualise()  # On initialise la matrice du jeu
+        jeu.actualise()  # On initialise la matrice du jeu avec 2 cases non vides
         jeu.actualise()
         fin = jeu.fin_jeu()
 
@@ -385,4 +382,3 @@ cdef class jeu2048:
         print(jeu)
 
         return jeu.score
-

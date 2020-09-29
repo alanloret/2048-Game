@@ -2,3 +2,4 @@ setuptools~=49.6.0
 Cython~=0.29.21
 matplotlib~=3.3.1
 DateTime~=4.3
+numpy~=1.19.1
